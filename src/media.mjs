@@ -1,0 +1,86 @@
+// Central asset registry. Every public image is listed here with provenance and status.
+// status: authentic | documented-illustration | historical | concept | conceptual-ai | document
+// Alt text lives in each locale dictionary under alt.<id> so it is translated.
+export const MEDIA = {
+  'inlet-front': {
+    folder: 'authentic', w: [640, 1280], ratio: '3/2', status: 'authentic',
+    source: 'Media Kit — 01_edited_authentic_photos/historical_product_presentation_people.jpg (orig. IMG_9776, 1500×1000). NOTE: kit filename does not match content — this file shows the inlet.',
+    edit: 'Mild contrast/exposure correction and resampling; no content changes.',
+    sections: ['home hero panel', 'products: building-integrated'], rights: 'Wastecykler authorization required before public launch',
+    priority: 'Request original high-resolution file'
+  },
+  'inlet-panel': {
+    folder: 'authentic', w: [640, 875], ratio: '875/510', status: 'authentic',
+    source: 'Media Kit — electronics_controller_wiring.jpg (orig. IMG_9781, 350×204). NOTE: kit filename does not match content — this file shows the inlet panel.', edit: 'Upscaled 2.5× from low-resolution source.',
+    sections: ['technology: interfaces'], rights: 'Wastecykler authorization required', priority: 'High — source is very low resolution'
+  },
+  'inlet-unit': {
+    folder: 'authentic', w: [640, 875], ratio: '875/510', status: 'authentic',
+    source: 'Media Kit — stainless_steel_inlet_unit.jpg (orig. IMG_9782, 350×204)', edit: 'Upscaled 2.5× from low-resolution source.',
+    sections: ['products: modular systems'], rights: 'Wastecykler authorization required', priority: 'High — source is very low resolution'
+  },
+  'oil-collection': {
+    folder: 'authentic', w: [640, 1280], ratio: '1/1', status: 'authentic',
+    source: 'Media Kit — used_cooking_oil_collection_demo.jpg (orig. IMG_9774, 1024×1024)', edit: 'Mild enhancement and resampling.',
+    sections: ['home spotlight', 'technology: used-oil', 'products: specialised streams'], rights: 'Wastecykler authorization required', priority: 'Medium'
+  },
+  'control-labels': {
+    folder: 'technology', w: [640, 800], ratio: '1/1', status: 'authentic',
+    source: 'Media Kit — installed_waste_inlet_labels.jpg (orig. IMG_9778, 320×320)', edit: 'Upscaled 2.5× from low-resolution source.',
+    sections: ['technology: controls', 'products: automation'], rights: 'Wastecykler authorization required', priority: 'High — source is very low resolution'
+  },
+  'control-cabinet': {
+    folder: 'technology', w: [640, 875], ratio: '875/510', status: 'authentic',
+    source: 'Media Kit — stainless_steel_inlet_panel.jpg (orig. IMG_9783, 350×204). NOTE: kit filename does not match content — this file shows the control cabinet.', edit: 'Upscaled 2.5× from low-resolution source.',
+    sections: ['technology: engineering'], rights: 'Wastecykler authorization required', priority: 'High — source is very low resolution'
+  },
+  'separator-configurations': {
+    folder: 'technology', w: [640, 1280], ratio: '1800/887', status: 'documented-illustration',
+    source: 'Media Kit — separator_configuration_diagram.jpg (orig. IMG_9773, 848×418)', edit: 'Upscaled; all original lines and labels retained.',
+    sections: ['technology: configurations', 'products: modular'], rights: 'Wastecykler authorization required', priority: 'Request vector/CAD original'
+  },
+  'presentation': {
+    folder: 'history', w: [640, 1280], ratio: '1486/982', status: 'historical',
+    source: 'Media Kit — stainless_steel_inlet_front.jpg (orig. IMG_9779, 991×655). NOTE: kit filename does not match content — this file shows the presentation with three people.', edit: 'Mild enhancement and upscaling.',
+    sections: ['innovation timeline', 'about'], rights: 'Identifiable adults — written usage permission required', priority: 'Confirm permissions'
+  },
+  'pilot-chute-labels': {
+    folder: 'history', w: [640, 800], ratio: '1/1', status: 'historical',
+    source: 'Media Kit — control_panel_buttons_two_versions.jpg (orig. IMG_9777, 320×320) — shows labelled collection chutes of a pilot project',
+    edit: 'Upscaled 2.5× from low-resolution source.', sections: ['innovation timeline'], rights: 'Wastecykler authorization required', priority: 'High — low resolution'
+  },
+  'municipal-sheet': {
+    folder: 'history', w: [640, 1030], ratio: '1030/1290', status: 'historical',
+    source: 'Media Kit — historical_municipal_information_sheet.jpg (extracted from IMG_9784 website screenshot)', edit: 'Extracted and enlarged; text unaltered.',
+    sections: ['innovation timeline'], rights: 'Wastecykler marketing material — authorization required',
+    priority: 'Contains company claims (e.g. 25% landfill reduction, 7/24 service) that are NOT repeated on the site until verified'
+  },
+  'tr-patent-certificate': {
+    folder: 'patent', w: [640, 1280], ratio: '1593/2224', status: 'document',
+    source: 'Media Kit — turkish_patent_certificate_full.jpg (orig. IMG_9780). TÜRKPATENT “İncelemeli Patent” No. TR 2013 03567 B; holder shown: Yunis Karaca',
+    edit: 'Mild enhancement; document text, numbers and seals unaltered.', sections: ['innovation: IP'],
+    rights: 'Verify ownership, legal status and permission to display', priority: 'Legal verification required'
+  },
+  'smart-container-board': {
+    folder: 'concepts', w: [640, 1280], ratio: '1708/1122', status: 'concept',
+    source: 'Media Kit — smart_container_technical_concept_board.jpg (extracted from website screenshot IMG_9784)', edit: 'Extracted and enlarged.',
+    sections: ['products: smart container concepts', 'innovation'], rights: 'Wastecykler authorization required', priority: 'Confirm whether this is a manufactured product'
+  },
+  'city-bluehour': {
+    folder: 'architecture', w: [800, 1600], ratio: '1672/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 01_hero_smart_city_bluehour.webp (original AI-generated image)', edit: 'Resized only.',
+    sections: ['home hero', 'technology hero'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
+  'city-green': {
+    folder: 'architecture', w: [800, 1600], ratio: '1672/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 03_solutions_green_urban_development.webp (original AI-generated image)', edit: 'Resized only.',
+    sections: ['solutions hero', 'partnerships hero'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  }
+};
+
+export const EXCLUDED = [
+  { file: 'internal/excluded/community_historical_installation.jpg', reason: 'Identifiable children. Excluded from the public demo by default; publish only with documented guardian permission.' },
+  { file: 'internal/originals/historical_municipal_and_smart_container_sheet.jpg', reason: 'Mobile screenshot (duplicate of extracted sheets). Kept for reference only.' },
+  { file: 'internal/originals/a_clean_*.png, IMG_9785(1).jpeg', reason: 'Raster logo concepts and legacy logo — reference only. Rebuilt as SVG in src/assets/brand.' },
+  { file: 'Supporting Visuals 02 & 04', reason: 'Near-duplicate blue-hour cityscapes; omitted to avoid repetition.' }
+];

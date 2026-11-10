@@ -105,21 +105,70 @@
         err(el, msg); if (msg && !first) first = el;
       });
       if (first) { first.focus(); return; }
-      var d = {}; new FormData(f).forEach(function (v, k) { d[k] = v; });
+      var fd = new FormData(f), d = {}; fd.forEach(function (v, k) { d[k] = v; });
+      var streams = fd.getAll('streams').join(', ');
+      var fit = (d.timeframe === 'now' || /Tender|procurement|construction|İhale|appel|Ausschreib|licitac|aanbested|upphandl|入札|construct|inşaat|مناقص|إنشاء|工事|Bau|bouw|bygg|obra|chantier/i.test(d.stage || '')) ? 'High' : (d.timeframe === 'soon' || d.stage) ? 'Medium' : 'Exploratory';
+      var qual = [d.sites && ('Sites: ' + d.sites), d.stage && ('Stage: ' + d.stage), streams && ('Streams: ' + streams), d.experience && ('Experience: ' + d.experience), d.capability && ('Capability: ' + d.capability), d.area && ('Expertise: ' + d.area)].filter(Boolean).join(' · ');
       var lead = {
         id: 'L' + Date.now(), company: d.org, contact: d.name, role: d.role, country: d.country, email: d.email,
-        type: d.buyer, project: d.project, timeframe: d.timeframe, notes: d.desc || '', territory: d.territory || '', expertise: d.expertise || d.capabilities || '',
-        meeting: !!d.meeting, source: 'Website form — ' + (document.documentElement.lang || 'en').toUpperCase() + ' / ' + (f.dataset.variant || 'project'),
+        type: d.buyer, project: d.project || qual || '', timeframe: d.timeframe, notes: d.desc || '', territory: d.territory || '', expertise: d.expertise || d.capabilities || '',
+        meeting: !!d.meeting, qual: qual, fit: fit, source: 'Website form — ' + (document.documentElement.lang || 'en').toUpperCase() + ' / ' + (f.dataset.variant || 'project'),
         stage: 'New Inquiry', owner: 'Unassigned', next: new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10), created: new Date().toISOString(), test: true
       };
       var list = []; try { list = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
       list.unshift(lead); try { localStorage.setItem(KEY, JSON.stringify(list)); } catch (e) {}
       var box = f.parentNode;
-      f.hidden = true;
+      f.hidden = true; var hd = box.querySelector('.wiz-head'); if (hd) hd.hidden = true;
       var ok = box.querySelector('.ok'); ok.hidden = false; ok.focus();
     });
     var again = f.parentNode.querySelector('.again');
-    if (again) again.addEventListener('click', function () { f.reset(); f.hidden = false; f.parentNode.querySelector('.ok').hidden = true; });
+    if (again) again.addEventListener('click', function () { f.reset(); f.hidden = false; f.parentNode.querySelector('.ok').hidden = true; var hd = f.parentNode.querySelector('.wiz-head'); if (hd) hd.hidden = false; if (f._go) f._go(1); });
     $$('input,select,textarea', f).forEach(function (el) { el.addEventListener('input', function () { if (el.getAttribute('aria-invalid') === 'true') err(el, ''); }); });
   });
+
+  // ---- v2: anatomy hotspots ----
+  $$('.anat').forEach(function (a) {
+    var hs = $$('.hs', a), li = $$('.anat-list li', a);
+    function pick(i) { hs.forEach(function (h, j) { h.setAttribute('aria-pressed', j === i); }); li.forEach(function (l, j) { l.classList.toggle('on', j === i); }); }
+    hs.forEach(function (h, i) { h.addEventListener('click', function () { pick(i); }); h.addEventListener('mouseenter', function () { pick(i); }); });
+    li.forEach(function (l, i) { l.addEventListener('click', function () { pick(i); }); });
+  });
+
+  // ---- v2: vertical tablists (up/down keys) ----
+  $$('[role=tablist][aria-orientation=vertical]').forEach(function (list) {
+    var tabs = $$('[role=tab]', list);
+    tabs.forEach(function (t, i) { t.addEventListener('keydown', function (e) {
+      var n = e.key === 'ArrowDown' ? tabs[(i + 1) % tabs.length] : e.key === 'ArrowUp' ? tabs[(i - 1 + tabs.length) % tabs.length] : null;
+      if (n) { e.preventDefault(); list._select(n, true); } }); });
+  });
+
+  // ---- v2: qualification wizard ----
+  var roleQ = (location.search.match(/[?&](?:role|type)=(\w+)/) || [])[1];
+  var roleMap = { partner: 'partner', distributor: 'distributor', municipality: 'municipality', developer: 'developer', manufacturer: 'manufacturer', project: '' };
+  $$('.wiz').forEach(function (w) {
+    var f = $('form', w), steps = $$('.ws', f), marks = $$('.wiz-steps li', w), cur = 1;
+    if (!w.dataset.preset && roleQ && roleMap[roleQ]) { var rr = f.querySelector('input[name=buyer][value=' + roleMap[roleQ] + ']'); if (rr) rr.checked = true; }
+    function role() { var c = f.querySelector('input[name=buyer]:checked'); return c ? c.value : ''; }
+    function go(n) {
+      cur = n; steps.forEach(function (s) { s.hidden = +s.dataset.s !== n; });
+      marks.forEach(function (m, i) { if (i === n - 1) m.setAttribute('aria-current', 'step'); else m.removeAttribute('aria-current'); m.classList.toggle('done', i < n - 1); });
+      if (n === 2) { var r = role(); $$('.qg[data-for]', f).forEach(function (g) { g.hidden = g.dataset.for.split(' ').indexOf(r) < 0; }); }
+      var first = steps[n - 1].querySelector('input:not([type=hidden]):not([tabindex="-1"]),button'); if (first && w.getBoundingClientRect().top < 0) w.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    f._go = go;
+    $$('.wnext', f).forEach(function (b) { b.addEventListener('click', function () {
+      var e = steps[cur - 1].querySelector('.ws-err');
+      if (cur === 1 && !role()) { e.textContent = (T.pick || ''); return; }
+      if (e) e.textContent = ''; go(cur + 1);
+    }); });
+    $$('.wback', f).forEach(function (b) { b.addEventListener('click', function () { go(cur - 1); }); });
+    $$('input[name=buyer]', f).forEach(function (i) { i.addEventListener('change', function () { var e = steps[0].querySelector('.ws-err'); if (e) e.textContent = ''; }); });
+  });
+
+  // ---- v2: reveal on scroll ----
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('rv-on');
+    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { rootMargin: '0px 0px -8% 0px' });
+    $$('.rv, .sec h2, .ed-row, .st-step, .cap, .spot, .evi .fig').forEach(function (el) { el.classList.add('rv'); io.observe(el); });
+  }
 })();

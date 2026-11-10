@@ -77,6 +77,31 @@ export const MEDIA = {
     source: 'Supporting Visuals — 01_hero_smart_city_bluehour.webp (original AI-generated image)', edit: 'Resized only.',
     sections: ['home hero', 'technology hero'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
   },
+  'city-waterfront': {
+    folder: 'architecture', w: [800, 1400], ratio: '1672/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 02_hero_waterfront_sustainable_city.webp (original AI-generated image)', edit: 'Resized/cropped only.',
+    sections: ['solutions'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
+  'city-dusk': {
+    folder: 'architecture', w: [800, 1400], ratio: '1672/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 04_solutions_sustainable_city_dusk.webp (original AI-generated image)', edit: 'Resized/cropped only.',
+    sections: ['solutions'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
+  'city-campus': {
+    folder: 'architecture', w: [800, 836], ratio: '836/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 02_hero_waterfront_sustainable_city.webp (right-half crop) (original AI-generated image)', edit: 'Resized/cropped only.',
+    sections: ['solutions'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
+  'city-plaza': {
+    folder: 'architecture', w: [800, 1000], ratio: '1000/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 04_solutions_sustainable_city_dusk.webp (left crop) (original AI-generated image)', edit: 'Resized/cropped only.',
+    sections: ['solutions'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
+  'city-towers': {
+    folder: 'architecture', w: [800, 972], ratio: '972/941', status: 'conceptual-ai', avif: true,
+    source: 'Supporting Visuals — 03_solutions_green_urban_development.webp (right crop) (original AI-generated image)', edit: 'Resized/cropped only.',
+    sections: ['solutions'], rights: 'AI-generated; no Wastecykler equipment or customer site depicted', priority: 'Keep labelled as conceptual'
+  },
   'city-green': {
     folder: 'architecture', w: [800, 1600], ratio: '1672/941', status: 'conceptual-ai', avif: true,
     source: 'Supporting Visuals — 03_solutions_green_urban_development.webp (original AI-generated image)', edit: 'Resized only.',
@@ -86,6 +111,5 @@ export const MEDIA = {
 
 export const EXCLUDED = [
   { file: 'internal/originals/historical_municipal_and_smart_container_sheet.jpg', reason: 'Mobile screenshot (duplicate of extracted sheets). Kept for reference only.' },
-  { file: 'internal/originals/a_clean_*.png, IMG_9785(1).jpeg', reason: 'Raster logo concepts and legacy logo — reference only. Rebuilt as SVG in src/assets/brand.' },
-  { file: 'Supporting Visuals 02 & 04', reason: 'Near-duplicate blue-hour cityscapes; omitted to avoid repetition.' }
+  { file: 'internal/originals/a_clean_*.png, IMG_9785(1).jpeg', reason: 'Raster logo concepts and legacy logo — reference only. Rebuilt as SVG in src/assets/brand.' }
 ];

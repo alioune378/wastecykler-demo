@@ -5,6 +5,7 @@ import fs from 'fs'; import path from 'path'; import { fileURLToPath } from 'url
 import { MEDIA } from './src/media.mjs';
 import { emblem, wordmark, FAVICON, brandSheet } from './src/brand.mjs';
 import { strategyPage, leadsPage } from './src/preview.mjs';
+import { makeV2 } from './src/v2.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(ROOT, 'dist');
@@ -13,7 +14,8 @@ const DEMO = process.env.DEMO !== '0';
 export const LOCALES = ['en', 'tr', 'fr', 'ar', 'de', 'ja', 'nl', 'sv', 'es'];
 
 const dict = {};
-for (const l of LOCALES) dict[l] = (await import(`./src/i18n/${l}.mjs`)).default;
+function deep(a, b) { if (b === undefined) return a; if (Array.isArray(b) || typeof b !== 'object' || b === null) return b; const o = { ...a }; for (const k of Object.keys(b)) o[k] = deep(a?.[k], b[k]); return o; }
+for (const l of LOCALES) { dict[l] = (await import(`./src/i18n/${l}.mjs`)).default; if (fs.existsSync(path.join(ROOT, `src/i18n/x/${l}.mjs`))) dict[l] = deep(dict[l], (await import(`./src/i18n/x/${l}.mjs`)).default); }
 const EN = dict.en;
 
 // ---------- helpers ----------
@@ -98,7 +100,7 @@ function layout(c, { title, desc, body, crumbs = [], active = '' }) {
   const ld = [{ '@context': 'https://schema.org', '@type': 'Organization', name: 'Wastecykler', url: 'https://www.wastecykler.com' }];
   if (crumbs.length) ld.push({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: bc.map((b, i) => ({ '@type': 'ListItem', position: i + 1, name: b.n, item: `${SITE}/${lang}/${b.r ? b.r + '/' : ''}` })) });
   const crumbHtml = crumbs.length ? `<nav class="crumbs" aria-label="${esc(t.nav.breadcrumb)}"><ol>${bc.map((b, i) => i === bc.length - 1 ? `<li aria-current="page">${esc(b.n)}</li>` : `<li><a href="${c.u(b.r)}">${esc(b.n)}</a></li>`).join('')}</ol></nav>` : '';
-  const js = { required: t.form.required, invalidEmail: t.form.invalidEmail, consentReq: t.form.consentReq, close: t.nav.close };
+  const js = { required: t.form.required, invalidEmail: t.form.invalidEmail, consentReq: t.form.consentReq, close: t.nav.close, pick: t.v2.wiz.pick };
   return `<!doctype html><html lang="${lang}" dir="${L.dir}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">${DEMO ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <link rel="canonical" href="${canon}">${alts}
@@ -117,9 +119,9 @@ function layout(c, { title, desc, body, crumbs = [], active = '' }) {
 <footer class="ftr"><div class="wrap"><div class="cols">
 <div class="brandcol"><a class="logo" href="${c.u('')}" aria-label="Wastecykler">${emblem(36)}${wordmark({ dark: true, height: 20 })}</a><p style="margin-top:14px">${esc(t.footer.tagline)}</p><p class="small">${esc(t.footer.contactNote)}</p></div>
 <div><h3>${esc(t.footer.explore)}</h3><ul>${['technology', 'products', 'solutions', 'resources'].map(k => `<li><a href="${c.u(k)}">${esc(t.nav[k])}</a></li>`).join('')}</ul></div>
-<div><h3>${esc(t.footer.company)}</h3><ul>${[['innovation', 'innovation'], ['partnerships', 'partnerships'], ['about', 'about'], ['contact', 'contact']].map(([k, r]) => `<li><a href="${c.u(r)}">${esc(t.nav[k])}</a></li>`).join('')}<li><a href="${c.rel}brand/">${esc(t.footer.logo)}</a></li></ul></div>
+<div><h3>${esc(t.footer.company)}</h3><ul>${[['innovation', 'innovation'], ['partnerships', 'partnerships'], ['about', 'about'], ['contact', 'contact']].map(([k, r]) => `<li><a href="${c.u(r)}">${esc(t.nav[k])}</a></li>`).join('')}</ul></div>
 <div><h3>${esc(t.nav.language)}</h3><ul>${LOCALES.map(l => `<li><a href="${c.u(c.route, l)}" lang="${l}" hreflang="${l}">${esc(T[l].meta.name)}</a></li>`).join('')}</ul></div>
-</div><div class="base"><span>© Wastecykler · ${esc(t.footer.demo)}</span><span>${esc(t.footer.translation)}</span></div></div></footer>
+</div><div class="base"><span>© Wastecykler · ${esc(t.footer.demo)}</span></div></div></footer>
 <script type="application/json" id="i18n">${JSON.stringify(js).replace(/</g, '\\u003c')}</script><script src="${c.rel}assets/site.js" defer></script></body></html>`;
 }
 
@@ -154,7 +156,7 @@ ${fld('desc', f.desc, 'textarea', false, true)}
 function home(c) {
   const { t } = c, h = t.home;
   const hero = `<section class="hero"><div class="bg"><picture><source type="image/avif" srcset="${srcset('city-bluehour', 'avif', c)}" sizes="100vw"><source type="image/webp" srcset="${srcset('city-bluehour', 'webp', c)}" sizes="100vw"><img src="${c.asset('architecture/city-bluehour-800.jpg')}" alt="${esc(t.alt['city-bluehour'])}" fetchpriority="high"></picture></div>
-<div class="wrap hero-g"><div><p class="eyebrow">${esc(h.eyebrow)}</p><h1>${esc(h.h1)}</h1><p class="lead">${esc(h.sub)}</p><div class="btns" style="margin-top:28px"><a class="btn btn-g" href="${c.u('technology')}">${esc(t.cta.explore)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}?type=project">${esc(t.cta.discuss)}</a></div></div>
+<div class="wrap hero-g"><div><p class="eyebrow">${esc(h.eyebrow)}</p><h1>${esc(h.h1)}</h1><p class="lead">${esc(h.sub)}</p><div class="btns" style="margin-top:28px"><a class="btn btn-g" href="${c.u('technology')}">${esc(t.cta.explore)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}">${esc(t.cta.discuss)}</a></div></div>
 <div class="panel">${pic(c, 'inlet-front', { eager: true, caption: esc(h.panelCaption), sizes: '(max-width:900px) 92vw, 480px' })}</div></div><span class="ai-note">${esc(t.status['conceptual-ai'])}</span></section>`;
   const offer = `<section class="sec-sm white"><div class="wrap offer"><h2>${esc(h.offerTitle)}</h2><p>${esc(h.offer)}</p><p>${esc(h.offerFor)}</p></div></section>`;
   const how = `<section class="sec"><div class="wrap"><p class="eyebrow">01</p><h2 style="max-width:22ch">${esc(h.howTitle)}</h2>
@@ -165,8 +167,8 @@ function home(c) {
 ${tabs.map(([k, img], i) => `<div role="tabpanel" id="spp-${k}" aria-labelledby="sp-${k}"${i ? ' hidden' : ''} class="g2">${pic(c, img, { zoom: true, cls: k === 'configs' ? 'contain' : '' })}<div><h3>${esc(h.tabs[k])}</h3><p class="lead">${esc(h.spot[k])}</p>${k === 'configs' ? `<p class="note">${esc(t.tech.configs.note)}</p>` : ''}<a class="btn btn-o" href="${c.u('technology')}">${esc(t.cta.explore)} ${ARR}</a></div></div>`).join('')}</div></section>`;
   const apps = `<section class="sec"><div class="wrap"><p class="eyebrow">03</p><h2>${esc(h.appsTitle)}</h2><p class="lead" style="margin-bottom:28px">${esc(h.appsIntro)}</p><div class="g5">${Object.entries(SOLUTIONS).map(([k, s]) => `<a class="card" href="${c.u('solutions/' + k)}">${icon(s.ico)}<h3>${esc(t.solutions.items[k].name)}</h3><span class="small">${esc(t.solutions.items[k].short)}</span><span class="more">${esc(t.cta.view)} ${ARR}</span></a>`).join('')}</div></div></section>`;
   const hist = `<section class="sec white"><div class="wrap g2"><div>${pic(c, 'presentation', { caption: esc(t.alt.presentation) })}</div><div><p class="eyebrow">04</p><h2>${esc(h.histTitle)}</h2><p class="lead">${esc(h.histText)}</p><p class="note">${esc(h.histNote)}</p><a class="btn btn-n" href="${c.u('innovation')}">${esc(t.nav.innovation)} ${ARR}</a></div></div></section>`;
-  const part = `<section class="sec"><div class="wrap g2"><div><p class="eyebrow">05</p><h2>${esc(h.partTitle)}</h2><p class="lead">${esc(h.partText)}</p><div class="btns"><a class="btn btn-n" href="${c.u('partnerships')}">${esc(t.cta.partner)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}?type=distributor">${esc(t.cta.distributor)}</a></div></div><ul class="list">${h.partList.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></section>`;
-  const fin = `<section class="sec dark"><div class="wrap g2" style="align-items:start"><div><h2>${esc(h.finalTitle)}</h2><p class="lead">${esc(h.finalText)}</p><div class="btns" style="flex-direction:column;align-items:flex-start"><a class="btn btn-g" href="${c.u('contact')}?type=project">${esc(t.cta.briefing)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}?type=project">${esc(t.cta.discuss)}</a><a class="btn btn-o" href="${c.u('partnerships')}">${esc(t.cta.partner)}</a></div></div>${form(c, 'project')}</div></section>`;
+  const part = `<section class="sec"><div class="wrap g2"><div><p class="eyebrow">05</p><h2>${esc(h.partTitle)}</h2><p class="lead">${esc(h.partText)}</p><div class="btns"><a class="btn btn-n" href="${c.u('partnerships')}">${esc(t.cta.partner)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}?role=distributor">${esc(t.cta.distributor)}</a></div></div><ul class="list">${h.partList.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></section>`;
+  const fin = `<section class="sec dark"><div class="wrap g2" style="align-items:start"><div><h2>${esc(h.finalTitle)}</h2><p class="lead">${esc(h.finalText)}</p><div class="btns" style="flex-direction:column;align-items:flex-start"><a class="btn btn-g" href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}">${esc(t.cta.discuss)}</a><a class="btn btn-o" href="${c.u('partnerships')}">${esc(t.cta.partner)}</a></div></div>${form(c, 'project')}</div></section>`;
   return layout(c, { title: h.title, desc: h.desc, body: hero + offer + how + spot + apps + hist + part + fin });
 }
 
@@ -174,18 +176,19 @@ function technology(c) {
   const { t } = c, x = t.tech;
   const colors = ['#5b6b7d', '#20B978', '#1f6fd1', '#e0a100', '#8b5cf6', '#E53935'];
   const cfgTabs = [2, 3, 4, 6];
-  const body = pageHero(c, { eyebrow: t.nav.technology, h1: x.h1, lead: x.intro, img: 'city-bluehour', extra: `<div class="btns" style="margin-top:24px"><a class="btn btn-g" href="${c.u('contact')}?type=project">${esc(t.cta.briefing)} ${ARR}</a></div>` }) +
-    `<section class="sec white"><div class="wrap g2"><div><h2>${esc(x.how.t)}</h2><p class="lead">${esc(x.how.p)}</p><div class="steps" style="grid-template-columns:1fr;margin-top:20px">${t.home.how.map((s, i) => `<button type="button" class="step" aria-pressed="${i === 0}"><b>0${i + 1}</b><h3>${esc(s.t)}</h3><span>${esc(s.d)}</span></button>`).join('')}</div></div>${pic(c, 'inlet-unit', { zoom: true })}</div></section>
+  const body = pageHero(c, { eyebrow: t.nav.technology, h1: x.h1, lead: x.intro, img: 'city-bluehour', extra: `<div class="btns" style="margin-top:24px"><a class="btn btn-g" href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a></div>` }) +
+    `<section class="sec white"><div class="wrap"><p class="eyebrow">${esc(t.status.authentic)}</p><h2>${esc(t.v2.anatomyTitle)}</h2><p class="lead" style="margin-bottom:24px">${esc(t.v2.anatomyIntro)}</p>${V2.anatomy(c)}</div></section>
+<section class="sec"><div class="wrap"><h2>${esc(t.v2.compareTitle)}</h2>${V2.compare(c)}</div></section>
+<section class="sec white"><div class="wrap g2"><div><h2>${esc(x.how.t)}</h2><p class="lead">${esc(x.how.p)}</p><div class="steps" style="grid-template-columns:1fr;margin-top:20px">${t.home.how.map((s, i) => `<button type="button" class="step" aria-pressed="${i === 0}"><b>0${i + 1}</b><h3>${esc(s.t)}</h3><span>${esc(s.d)}</span></button>`).join('')}</div></div>${pic(c, 'inlet-unit', { zoom: true })}</div></section>
 <section class="sec" id="configurations"><div class="wrap"><h2>${esc(x.configs.t)}</h2><p class="lead">${esc(x.configs.p)}</p>${pic(c, 'separator-configurations', { cls: 'contain', zoom: true })}
-<div class="cfg" style="margin-top:28px"><div><div class="tabs" role="tablist" aria-label="${esc(x.configs.t)}">${cfgTabs.map((n, i) => `<button role="tab" id="cf-${n}" aria-controls="cfp-${n}" aria-selected="${i === 1}" tabindex="${i === 1 ? 0 : -1}">${n} ${esc(x.cfgLabel)}</button>`).join('')}</div>
-${cfgTabs.map((n, i) => `<div role="tabpanel" id="cfp-${n}" aria-labelledby="cf-${n}"${i === 1 ? '' : ' hidden'}><ol>${x.cfg[n].map((s, j) => `<li><span style="background:${colors[n === 2 ? j * 1 : j]}">${j + 1}</span>${esc(s)}</li>`).join('')}</ol></div>`).join('')}</div><p class="note">${esc(x.configs.note)}</p></div></div></section>
+<div style="margin-top:28px">${V2.schematicCfg(c)}</div></section>
 <section class="sec white"><div class="wrap g2">${pic(c, 'inlet-panel', { zoom: true })}<div><h2>${esc(x.interface.t)}</h2><p class="lead">${esc(x.interface.p)}</p></div></div></section>
 <section class="sec"><div class="wrap g2"><div><h2>${esc(x.controls.t)}</h2><p class="lead">${esc(x.controls.p)}</p></div>${pic(c, 'control-labels', { zoom: true })}</div></section>
 <section class="sec dark" id="used-oil"><div class="wrap g2">${pic(c, 'oil-collection', { zoom: true })}<div><p class="eyebrow">${esc(t.home.tabs.oil)}</p><h2>${esc(x.oil.t)}</h2><p class="lead">${esc(x.oil.p)}</p><a class="btn btn-g" href="${c.u('products/specialised-streams')}">${esc(t.products.items['specialised-streams'].name)} ${ARR}</a></div></div></section>
 <section class="sec white"><div class="wrap g2"><div><h2>${esc(x.eng.t)}</h2><p>${esc(x.eng.p)}</p><ul class="list">${x.eng.list.map(i => `<li>${esc(i)}</li>`).join('')}</ul><p class="note" style="margin-top:20px">${esc(x.engNote)}</p></div>${pic(c, 'control-cabinet', { zoom: true })}</div></section>
-<section class="sec"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.docs.t)}</h2><p>${esc(x.docs.p)}</p>${x.docs.items.map((d, i) => `<details class="acc"${i === 0 ? ' open' : ''}><summary>${esc(d.t)}</summary><div><p>${esc(d.d)}</p><span class="badge confirm">${esc(x.docBadge)}</span>${i === 4 ? `<p style="margin-top:12px"><a href="${c.u('contact')}?type=project">${esc(t.cta.briefing)} ${ARR}</a></p>` : ''}</div></details>`).join('')}</div>
+<section class="sec"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.docs.t)}</h2><p>${esc(x.docs.p)}</p>${x.docs.items.map((d, i) => `<details class="acc"${i === 0 ? ' open' : ''}><summary>${esc(d.t)}</summary><div><p>${esc(d.d)}</p><span class="badge historical">${esc(t.v2.docOnRequest)}</span>${i === 4 ? `<p style="margin-top:12px"><a href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a></p>` : ''}</div></details>`).join('')}</div>
 <div><h2>${esc(x.faqTitle)}</h2>${x.faq.map(q => `<details class="acc"><summary>${esc(q.q)}</summary><div><p>${esc(q.a)}</p></div></details>`).join('')}</div></div></section>
-<section class="sec dark"><div class="wrap">${form(c, 'project', { title: t.cta.briefing })}</div></section>`;
+<section class="sec dark" id="inquiry"><div class="wrap g2" style="align-items:start"><div><h2>${esc(t.cta.briefing)}</h2><p class="lead">${esc(t.home.finalText)}</p></div>${V2.wizard(c, '', { title: t.cta.briefing })}</div></section>`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.technology, r: 'technology' }] });
 }
 
@@ -205,9 +208,9 @@ function product(c, k) {
   const body = `<section class="sec-sm white"><div class="wrap"><!--crumbs--><div class="g2" style="align-items:start">${gallery}<div><span class="badge ${d.status}">${esc(t.status[d.status])}</span><h1 style="font-size:clamp(1.9rem,1.3rem + 2vw,2.9rem);margin-top:12px">${esc(it.name)}</h1><p class="lead">${esc(it.overview)}</p>
 <h2 style="font-size:1.1rem;margin-top:24px">${esc(L.features)}</h2><ul class="list">${it.features.map(f => `<li>${esc(f)}</li>`).join('')}</ul>
 <dl class="kv" style="margin-top:20px"><dt>${esc(L.configuration)}</dt><dd>${esc(it.config)}</dd></dl>
-<div class="btns" style="margin-top:28px"><a class="btn btn-g" href="${c.u('contact')}?type=project">${esc(t.cta.briefing)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}?type=project">${esc(t.cta.installation)}</a></div></div></div></div></section>
+<div class="btns" style="margin-top:28px"><a class="btn btn-g" href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a><a class="btn btn-o" href="${c.u('contact')}">${esc(t.cta.installation)}</a></div></div></div></div></section>
 <section class="sec"><div class="wrap g2" style="align-items:start"><div><h2>${esc(L.applications)}</h2><div style="display:grid;gap:10px">${d.apps.map(a => `<a class="card" style="flex-direction:row;align-items:center" href="${c.u('solutions/' + a)}">${icon(SOLUTIONS[a].ico)}<strong style="color:var(--navy)">${esc(t.solutions.items[a].name)}</strong><span class="more" style="margin-inline-start:auto">${ARR}</span></a>`).join('')}</div></div>
-<div><h2>${esc(L.documentation)}</h2><p>${esc(L.docNote)}</p>${t.tech.docs.items.slice(0, 4).map(x => `<details class="acc"><summary>${esc(x.t)}</summary><div><p>${esc(x.d)}</p><span class="badge confirm">${esc(t.tech.docBadge)}</span></div></details>`).join('')}</div></div></section>
+<div><h2>${esc(L.documentation)}</h2><p>${esc(L.docNote)}</p>${t.tech.docs.items.slice(0, 4).map(x => `<details class="acc"><summary>${esc(x.t)}</summary><div><p>${esc(x.d)}</p><span class="badge historical">${esc(t.v2.docOnRequest)}</span></div></details>`).join('')}</div></div></section>
 <section class="sec white"><div class="wrap"><h2>${esc(t.nav.products)}</h2><div class="g3">${related.map(r => `<a class="card" href="${c.u('products/' + r)}">${icon(PRODUCTS[r].ico)}<h3>${esc(p.items[r].name)}</h3><span>${esc(p.items[r].short)}</span><span class="more">${esc(t.cta.view)} ${ARR}</span></a>`).join('')}</div></div></section>`;
   return layout(c, { title: `${it.name} — Wastecykler`, desc: `${it.short} ${it.overview}`.slice(0, 158), body, crumbs: [{ n: t.nav.products, r: 'products' }, { n: it.name, r: 'products/' + k }] });
 }
@@ -221,7 +224,7 @@ function solutionsIndex(c) {
 
 function solution(c, k) {
   const { t } = c, s = t.solutions, it = s.items[k], d = SOLUTIONS[k];
-  const body = `<section class="hero phero"><div class="wrap hero-g" style="grid-template-columns:1.1fr .9fr"><div><!--crumbs-->${icon(d.ico)}<h1 style="margin-top:16px">${esc(it.name)}</h1><p class="lead">${esc(it.intro)}</p><div class="btns" style="margin-top:24px"><a class="btn btn-g" href="${c.u('contact')}?type=project">${esc(t.cta.discuss)} ${ARR}</a></div></div><div class="panel">${pic(c, d.img, { eager: true, sizes: '(max-width:900px) 92vw, 460px' })}</div></div></section>
+  const body = `<section class="hero phero"><div class="wrap hero-g" style="grid-template-columns:1.1fr .9fr"><div><!--crumbs-->${icon(d.ico)}<h1 style="margin-top:16px">${esc(it.name)}</h1><p class="lead">${esc(it.intro)}</p><div class="btns" style="margin-top:24px"><a class="btn btn-g" href="${c.u('contact')}">${esc(t.cta.discuss)} ${ARR}</a></div></div><div class="panel">${pic(c, d.img, { eager: true, sizes: '(max-width:900px) 92vw, 460px' })}</div></div></section>
 <section class="sec white"><div class="wrap g2" style="align-items:start"><div><h2>${esc(s.labels.focus)}</h2><ul class="list">${it.focus.map(f => `<li>${esc(f)}</li>`).join('')}</ul>${it.note ? `<p class="note" style="margin-top:20px">${esc(it.note)}</p>` : ''}</div>
 <div><h2>${esc(s.labels.products)}</h2><div style="display:grid;gap:10px">${d.prods.map(p => `<a class="card" style="flex-direction:row;align-items:center" href="${c.u('products/' + p)}">${icon(PRODUCTS[p].ico)}<span><strong style="color:var(--navy);display:block">${esc(t.products.items[p].name)}</strong><span class="small">${esc(t.products.items[p].short)}</span></span></a>`).join('')}</div></div></div></section>
 <section class="sec"><div class="wrap g2" style="align-items:start"><div><h2>${esc(s.labels.next)}</h2><p class="lead">${esc(t.home.finalText)}</p><ul class="list">${t.tech.faq.map(q => `<li>${esc(q.q)}</li>`).join('')}</ul></div>${form(c, k === 'municipalities' ? 'institutional' : 'project', { title: t.cta.discuss })}</div></section>`;
@@ -231,11 +234,13 @@ function solution(c, k) {
 function innovation(c) {
   const { t } = c, x = t.innov;
   const imgs = [null, null, ['pilot-chute-labels', 'community-installation'], 'presentation', null];
-  const body = pageHero(c, { eyebrow: t.nav.innovation, h1: x.h1, lead: x.intro }) +
+  const body = pageHero(c, { eyebrow: t.nav.innovation, h1: x.h1, lead: x.intro, extra: `<div class="legend" style="margin-top:20px">${['authentic', 'historical', 'document', 'proposed'].map(k => `<span class="badge ${k}">${esc(t.status[k])}</span>`).join('')}</div>` }) +
     `<section class="sec white"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.timelineTitle)}</h2><ol class="tl">${x.timeline.map((e, i) => `<li><span class="y">${esc(e.y)}</span><div><span class="badge ${e.s}">${esc(t.status[e.s])}</span><h3 style="margin-top:8px">${esc(e.t)}</h3><p>${esc(e.d)}</p>${imgs[i] ? `<div style="display:grid;grid-template-columns:repeat(${[].concat(imgs[i]).length},1fr);gap:10px">${[].concat(imgs[i]).map(id => pic(c, id, { badge: false, zoom: true, sizes: '(max-width:800px) 45vw, 240px' })).join('')}</div>` : ''}</div></li>`).join('')}</ol></div>
 <div style="position:sticky;top:96px">${pic(c, 'municipal-sheet', { zoom: true, caption: esc(t.alt['municipal-sheet']), sizes: '(max-width:800px) 92vw, 520px' })}</div></div></section>
 <section class="sec" id="patent"><div class="wrap g2" style="align-items:start"><div style="max-width:440px">${pic(c, 'tr-patent-certificate', { zoom: true, cls: 'contain', sizes: '(max-width:800px) 92vw, 440px' })}</div><div><h2>${esc(x.patentTitle)}</h2><p>${esc(x.patentText)}</p><dl class="kv">${x.patentFacts.map(([a, b]) => `<dt>${esc(a)}</dt><dd${/TR 2013|Karaca|ayrıştırma/.test(b) ? ' lang="tr"' : ''}>${esc(b)}</dd>`).join('')}</dl><p class="note" style="margin-top:20px">${esc(x.patentNote)}</p>
-<h3 style="margin-top:28px">${esc(x.principlesTitle)}</h3><ul class="list">${x.principles.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div></div></section>
+</div></div></section>
+<section class="sec white"><div class="wrap"><h2>${esc(t.v2.engTitle)}</h2><div class="capg">${t.v2.eng.map((e, i) => `<div class="cap">${pic(c, ['inlet-front', 'control-cabinet', 'separator-configurations', 'control-labels'][i], { badge: false, cls: i === 2 ? 'contain' : '', sizes: '(max-width:700px) 46vw, 280px' })}<h3>${esc(e.t)}</h3><p class="small">${esc(e.d)}</p></div>`).join('')}</div></div></section>
+<section class="sec dark band"><div class="wrap g2"><div><span class="badge proposed">${esc(t.status.proposed)}</span><h2 style="margin-top:12px">${esc(t.v2.expTitle)}</h2><p class="lead">${esc(t.v2.expNote)}</p><a class="btn btn-g" href="${c.u('partnerships')}">${esc(t.cta.partner)} ${ARR}</a></div><ol class="nlist">${t.v2.exp.map((x, i) => `<li><span>0${i + 1}</span>${esc(x)}</li>`).join('')}</ol></div></section>
 <section class="sec dark"><div class="wrap g2">${pic(c, 'smart-container-board', { zoom: true, cls: 'contain' })}<div><h2>${esc(t.products.items['smart-container'].name)}</h2><p class="lead">${esc(t.products.items['smart-container'].overview)}</p><a class="btn btn-g" href="${c.u('products/smart-container')}">${esc(t.cta.view)} ${ARR}</a></div></div></section>`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.innovation, r: 'innovation' }] });
 }
@@ -245,15 +250,15 @@ function partnerships(c) {
   const keys = Object.keys(x.items);
   const body = pageHero(c, { eyebrow: t.nav.partnerships, h1: x.h1, lead: x.intro, img: 'city-green' }) +
     `<section class="sec"><div class="wrap"><div class="tabs" role="tablist" aria-label="${esc(x.h1)}">${keys.map((k, i) => `<button role="tab" id="pt-${k}" aria-controls="pp-${k}" aria-selected="${i === 0}" tabindex="${i ? -1 : 0}">${esc(x.items[k].name)}</button>`).join('')}</div>
-${keys.map((k, i) => `<div role="tabpanel" id="pp-${k}" aria-labelledby="pt-${k}"${i ? ' hidden' : ''}><div class="g2" style="align-items:start"><div>${icon(ic[k])}<h2 style="margin-top:16px">${esc(x.items[k].name)}</h2><p class="lead">${esc(x.items[k].intro)}</p><ul class="list">${x.items[k].list.map(l => `<li>${esc(l)}</li>`).join('')}</ul><p class="note" style="margin-top:20px">${esc(x.note)}</p></div>${form(c, k === 'distribution' ? 'distributor' : k, { title: k === 'distribution' ? t.cta.distributor : k === 'manufacturing' ? t.cta.manufacturing : t.cta.partner })}</div></div>`).join('')}</div></section>`;
+${keys.map((k, i) => `<div role="tabpanel" id="pp-${k}" aria-labelledby="pt-${k}"${i ? ' hidden' : ''}><div class="g2" style="align-items:start"><div>${icon(ic[k])}<h2 style="margin-top:16px">${esc(x.items[k].name)}</h2><p class="lead">${esc(x.items[k].intro)}</p><ul class="list">${x.items[k].list.map(l => `<li>${esc(l)}</li>`).join('')}</ul></div>${V2.wizard(c, { technology: 'partner', manufacturing: 'manufacturer', distribution: 'distributor', developers: 'developer', institutional: 'municipality' }[k], { title: k === 'distribution' ? t.cta.distributor : k === 'manufacturing' ? t.cta.manufacturing : t.cta.partner })}</div></div>`).join('')}</div></section>`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.partnerships, r: 'partnerships' }] });
 }
 
 function resources(c) {
   const { t } = c, x = t.resources;
   const body = pageHero(c, { eyebrow: t.nav.resources, h1: x.h1, lead: x.intro }) +
-    `<section class="sec white"><div class="wrap"><h2>${esc(x.docsTitle)}</h2><div class="g3">${t.tech.docs.items.map(d => `<div class="card">${icon('doc')}<h3>${esc(d.t)}</h3><span>${esc(d.d)}</span><span class="badge confirm" style="align-self:flex-start">${esc(t.tech.docBadge)}</span><a class="more" href="${c.u('contact')}?type=project">${esc(t.cta.briefing)} ${ARR}</a></div>`).join('')}</div></div></section>
-<section class="sec"><div class="wrap"><h2>${esc(x.articlesTitle)}</h2><div class="g3">${x.articles.map(a => `<article class="card"><span class="badge historical" style="align-self:flex-start">${esc(x.articleBadge)}</span><h3>${esc(a.t)}</h3><span>${esc(a.d)}</span></article>`).join('')}</div></div></section>`;
+    `<section class="sec white"><div class="wrap"><h2>${esc(x.docsTitle)}</h2><div class="g3">${t.tech.docs.items.map(d => `<div class="card">${icon('doc')}<h3>${esc(d.t)}</h3><span>${esc(d.d)}</span><span class="badge historical" style="align-self:flex-start">${esc(t.v2.docOnRequest)}</span><a class="more" href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a></div>`).join('')}</div></div></section>
+<section class="sec"><div class="wrap"><h2>${esc(x.articlesTitle)}</h2><div class="g3">${x.articles.map(a => `<article class="card"><span class="badge historical" style="align-self:flex-start">${esc(t.v2.comingSoon)}</span><h3>${esc(a.t)}</h3><span>${esc(a.d)}</span></article>`).join('')}</div></div></section>`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.resources, r: 'resources' }] });
 }
 
@@ -265,13 +270,13 @@ function about(c) {
 }
 
 function contact(c) {
-  const { t } = c, x = t.contact; const r = [['project', 'project'], ['partner', 'partner'], ['distributor', 'distributor']];
+  const { t } = c, x = t.contact;
   const body = pageHero(c, { eyebrow: t.nav.contact, h1: x.h1, lead: x.intro }) +
-    `<section class="sec"><div class="wrap" style="max-width:900px"><div class="tabs" role="tablist" id="routes" aria-label="${esc(x.h1)}">${r.map(([k], i) => `<button role="tab" data-route="${k}" id="rt-${k}" aria-controls="rp-${k}" aria-selected="${i === 0}" tabindex="${i ? -1 : 0}">${esc(x.routes[k])}</button>`).join('')}</div>
-${r.map(([k, v], i) => `<div role="tabpanel" id="rp-${k}" aria-labelledby="rt-${k}"${i ? ' hidden' : ''}>${form(c, v, { title: x.routes[k] })}</div>`).join('')}<p class="small muted" style="margin-top:20px">${esc(t.footer.contactNote)}</p></div></section>`;
+    `<section class="sec"><div class="wrap" style="max-width:860px">${V2.wizard(c, '')}<p class="small muted" style="margin-top:20px">${esc(t.footer.contactNote)}</p></div></section>`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.contact, r: 'contact' }] });
 }
 
+const V2 = makeV2({ esc, pic, srcset, MEDIA, ARR, icon, PRODUCTS, SOLUTIONS, layout, pageHero });
 // ---------- write ----------
 function write(rel, html) { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); }
 fs.rmSync(OUT, { recursive: true, force: true });
@@ -281,10 +286,10 @@ fs.copyFileSync(path.join(ROOT, 'src/site.js'), path.join(OUT, 'assets/site.js')
 fs.writeFileSync(path.join(OUT, 'favicon.svg'), FAVICON);
 const routes = [];
 for (const lang of LOCALES) {
-  const P = (route, fn) => { FORM_N = 0; write(`${lang}/${route ? route + '/' : ''}index.html`, fn(ctx(lang, route))); if (lang === 'en') routes.push(route); };
-  P('', home); P('technology', technology); P('products', productsIndex);
+  const P = (route, fn) => { FORM_N = 0; V2.resetWizard(); write(`${lang}/${route ? route + '/' : ''}index.html`, fn(ctx(lang, route))); if (lang === 'en') routes.push(route); };
+  P('', V2.home); P('technology', technology); P('products', productsIndex);
   for (const k of Object.keys(PRODUCTS)) P('products/' + k, c => product(c, k));
-  P('solutions', solutionsIndex); for (const k of Object.keys(SOLUTIONS)) P('solutions/' + k, c => solution(c, k));
+  P('solutions', V2.solutionsIndex); for (const k of Object.keys(SOLUTIONS)) P('solutions/' + k, c => V2.solution(c, k));
   P('innovation', innovation); P('partnerships', partnerships); P('resources', resources); P('about', about); P('contact', contact);
 }
 write('index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Wastecykler</title><link rel="icon" href="favicon.svg"><meta http-equiv="refresh" content="0;url=en/"><script>var l=(navigator.language||'en').slice(0,2),L=${JSON.stringify(LOCALES)};location.replace((L.indexOf(l)>-1?l:'en')+'/')</script></head><body><p><a href="en/">Continue to the Wastecykler demo</a></p>${LOCALES.map(l => `<a href="${l}/" hreflang="${l}">${T[l].meta.name}</a>`).join(' · ')}</body></html>`);

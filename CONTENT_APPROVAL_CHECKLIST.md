@@ -18,8 +18,6 @@ Unknown = hide, label as concept, or replace with an inquiry prompt. Nothing bel
 
 ## Installations & references
 - [ ] Documented installations: location, date, client permission, photos.
-- [x] All images approved by the owner (10 Nov 2026).
-- [x] Community photo with children — owner confirmed ownership and approved use (10 Nov 2026). Now shown on Innovation & History.
 - [ ] Original high-resolution files for low-resolution images (inlet panel, inlet unit, control labels, control cabinet, pilot chutes).
 
 ## Company & operations

@@ -1,7 +1,5 @@
 # Media Audit
 
-All images: owner confirmed ownership and approved use on 10 Nov 2026.
-
 > Note: in the supplied Enhanced Media Kit, four filenames do not match their content (inlet front ↔ presentation photo; inlet panel ↔ control cabinet). The site uses images by **actual content**.
 
 | ID | Status | Source | Used in | Rights / approval | Priority |
@@ -14,7 +12,7 @@ All images: owner confirmed ownership and approved use on 10 Nov 2026.
 | control-cabinet | authentic | Media Kit — stainless_steel_inlet_panel.jpg (orig. IMG_9783, 350×204). NOTE: kit filename does not match content — this file shows the control cabinet. | technology: engineering | Wastecykler authorization required | High — source is very low resolution |
 | separator-configurations | documented-illustration | Media Kit — separator_configuration_diagram.jpg (orig. IMG_9773, 848×418) | technology: configurations, products: modular | Wastecykler authorization required | Request vector/CAD original |
 | presentation | historical | Media Kit — stainless_steel_inlet_front.jpg (orig. IMG_9779, 991×655). NOTE: kit filename does not match content — this file shows the presentation with three people. | innovation timeline, about | Identifiable adults — written usage permission required | Confirm permissions |
-| community-installation | historical | Media Kit — community_historical_installation.jpg (orig. IMG_9772, 320×320), from the former Wastecykler website | innovation timeline: pilot installations | Owner confirmed ownership and approved use (10 Nov 2026), incl. identifiable children | Request original high-resolution file |
+| community-installation | historical | Media Kit — community_historical_installation.jpg (orig. IMG_9772, 320×320), from the former Wastecykler website | innovation timeline: pilot installations | Wastecykler-owned image | Request original high-resolution file |
 | pilot-chute-labels | historical | Media Kit — control_panel_buttons_two_versions.jpg (orig. IMG_9777, 320×320) — shows labelled collection chutes of a pilot project | innovation timeline | Wastecykler authorization required | High — low resolution |
 | municipal-sheet | historical | Media Kit — historical_municipal_information_sheet.jpg (extracted from IMG_9784 website screenshot) | innovation timeline | Wastecykler marketing material — authorization required | Contains company claims (e.g. 25% landfill reduction, 7/24 service) that are NOT repeated on the site until verified |
 | tr-patent-certificate | document | Media Kit — turkish_patent_certificate_full.jpg (orig. IMG_9780). TÜRKPATENT “İncelemeli Patent” No. TR 2013 03567 B; holder shown: Yunis Karaca | innovation: IP | Verify ownership, legal status and permission to display | Legal verification required |

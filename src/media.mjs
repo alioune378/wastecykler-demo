@@ -48,7 +48,7 @@ export const MEDIA = {
     folder: 'history', w: [640, 800], ratio: '1/1', status: 'historical',
     source: 'Media Kit — community_historical_installation.jpg (orig. IMG_9772, 320×320), from the former Wastecykler website',
     edit: 'Upscaled 2.5× from low-resolution source.', sections: ['innovation timeline: pilot installations'],
-    rights: 'Owner confirmed ownership and approved use (10 Nov 2026), incl. identifiable children', priority: 'Request original high-resolution file'
+    rights: 'Wastecykler-owned image', priority: 'Request original high-resolution file'
   },
   'pilot-chute-labels': {
     folder: 'history', w: [640, 800], ratio: '1/1', status: 'historical',

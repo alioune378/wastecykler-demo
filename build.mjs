@@ -6,6 +6,7 @@ import { MEDIA } from './src/media.mjs';
 import { emblem, wordmark, FAVICON, brandSheet } from './src/brand.mjs';
 import { strategyPage, leadsPage } from './src/preview.mjs';
 import { makeV2 } from './src/v2.mjs';
+import { makeV3 } from './src/v3.mjs';
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(ROOT, 'dist');
@@ -15,7 +16,7 @@ export const LOCALES = ['en', 'tr', 'fr', 'ar', 'de', 'ja', 'nl', 'sv', 'es'];
 
 const dict = {};
 function deep(a, b) { if (b === undefined) return a; if (Array.isArray(b) || typeof b !== 'object' || b === null) return b; const o = { ...a }; for (const k of Object.keys(b)) o[k] = deep(a?.[k], b[k]); return o; }
-for (const l of LOCALES) { dict[l] = (await import(`./src/i18n/${l}.mjs`)).default; if (fs.existsSync(path.join(ROOT, `src/i18n/x/${l}.mjs`))) dict[l] = deep(dict[l], (await import(`./src/i18n/x/${l}.mjs`)).default); }
+for (const l of LOCALES) { dict[l] = (await import(`./src/i18n/${l}.mjs`)).default; for (const x of ['x', 'x3']) if (fs.existsSync(path.join(ROOT, `src/i18n/${x}/${l}.mjs`))) dict[l] = deep(dict[l], (await import(`./src/i18n/${x}/${l}.mjs`)).default); }
 const EN = dict.en;
 
 // ---------- helpers ----------
@@ -105,17 +106,18 @@ function layout(c, { title, desc, body, crumbs = [], active = '' }) {
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}">${DEMO ? '<meta name="robots" content="noindex,nofollow">' : ''}
 <link rel="canonical" href="${canon}">${alts}
 <meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(desc)}"><meta property="og:type" content="website"><meta property="og:locale" content="${lang}">
-<meta name="theme-color" content="#071F39"><link rel="icon" href="${c.rel}favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="${c.rel}assets/site.css">
+<meta name="theme-color" content="#071F39"><link rel="icon" href="${c.rel}favicon.svg" type="image/svg+xml"><link rel="preload" href="${c.rel}assets/fonts/Inter-Regular.woff" as="font" type="font/woff" crossorigin><link rel="preload" href="${c.rel}assets/fonts/InterDisplay-ExtraBold.woff" as="font" type="font/woff" crossorigin><link rel="stylesheet" href="${c.rel}assets/site.css">
 <script type="application/ld+json">${JSON.stringify(ld.length === 1 ? ld[0] : ld)}</script></head><body>
 <a class="skip" href="#main">${esc(t.nav.skip)}</a>
 <div class="demo" role="note">${esc(L.demoBanner)}</div>
 <header class="hdr"><div class="wrap in"><a class="logo" href="${c.u('')}" aria-label="Wastecykler — ${esc(t.nav.home)}">${emblem(36).replace('<svg', '<svg class="em"')}${wordmark({ height: 21 }).replace('<svg', '<svg class="wm"')}</a>
 <nav class="nav" aria-label="${esc(t.nav.menu)}">${nav}</nav>
 <div class="tools"><details class="lang"><summary aria-label="${esc(t.nav.language)}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg><span class="lbl">${esc(L.name)}</span> <span aria-hidden="true">▾</span></summary><ul>${langs}</ul></details>
-<a class="btn btn-g" href="${c.u('contact')}" style="min-height:44px;padding:0 16px">${esc(t.nav.contact)}</a>
+<a class="btn btn-g hcta" href="${c.u('contact')}?intent=consultation"><span class="lc">${esc(t.nav.contact)}</span><span class="ls">${esc(t.v3.consultShort)}</span></a>
 <button class="burger" type="button" aria-expanded="false" aria-controls="mnav" aria-label="${esc(t.nav.menu)}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button></div></div>
 <nav class="mnav" id="mnav" data-open="false" aria-label="${esc(t.nav.menu)}"><ul class="wrap">${[['home', '']].concat(NAV).concat([['contact', 'contact']]).map(([k, r]) => `<li><a href="${c.u(r)}"${(r === top && (r || !c.route)) ? ' aria-current="page"' : ''}>${esc(t.nav[k])}</a></li>`).join('')}</ul></nav></header>
 <main id="main" tabindex="-1">${crumbHtml ? body.replace('<!--crumbs-->', crumbHtml) : body.replace('<!--crumbs-->', '')}</main>
+<div class="mcta" hidden><span>${esc(t.v3.sticky)}</span><a class="btn btn-g" href="${c.u('contact')}?intent=consultation">${esc(t.v3.consultShort)} ${ARR}</a></div>
 <footer class="ftr"><div class="wrap"><div class="cols">
 <div class="brandcol"><a class="logo" href="${c.u('')}" aria-label="Wastecykler">${emblem(36)}${wordmark({ dark: true, height: 20 })}</a><p style="margin-top:14px">${esc(t.footer.tagline)}</p><p class="small">${esc(t.footer.contactNote)}</p></div>
 <div><h3>${esc(t.footer.explore)}</h3><ul>${['technology', 'products', 'solutions', 'resources'].map(k => `<li><a href="${c.u(k)}">${esc(t.nav[k])}</a></li>`).join('')}</ul></div>
@@ -177,9 +179,8 @@ function technology(c) {
   const colors = ['#5b6b7d', '#20B978', '#1f6fd1', '#e0a100', '#8b5cf6', '#E53935'];
   const cfgTabs = [2, 3, 4, 6];
   const body = pageHero(c, { eyebrow: t.nav.technology, h1: x.h1, lead: x.intro, img: 'city-bluehour', extra: `<div class="btns" style="margin-top:24px"><a class="btn btn-g" href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a></div>` }) +
-    `<section class="sec white"><div class="wrap"><p class="eyebrow">${esc(t.status.authentic)}</p><h2>${esc(t.v2.anatomyTitle)}</h2><p class="lead" style="margin-bottom:24px">${esc(t.v2.anatomyIntro)}</p>${V2.anatomy(c)}</div></section>
-<section class="sec"><div class="wrap"><h2>${esc(t.v2.compareTitle)}</h2>${V2.compare(c)}</div></section>
-<section class="sec white"><div class="wrap g2"><div><h2>${esc(x.how.t)}</h2><p class="lead">${esc(x.how.p)}</p><div class="steps" style="grid-template-columns:1fr;margin-top:20px">${t.home.how.map((s, i) => `<button type="button" class="step" aria-pressed="${i === 0}"><b>0${i + 1}</b><h3>${esc(s.t)}</h3><span>${esc(s.d)}</span></button>`).join('')}</div></div>${pic(c, 'inlet-unit', { zoom: true })}</div></section>
+    `<section class="sec white"><div class="wrap"><div class="sh"><p class="eyebrow">${esc(t.status.authentic)}</p><h2>${esc(t.v3.diagramTitle)}</h2><p class="lead">${esc(t.v3.diagramIntro)}</p></div>${V3.diagram(c)}</div></section>
+<section class="sec"><div class="wrap"><div class="sh"><h2>${esc(t.v3.systemTitle)}</h2><p class="lead">${esc(t.v3.systemIntro)}</p></div>${V3.system(c)}</div></section>
 <section class="sec" id="configurations"><div class="wrap"><h2>${esc(x.configs.t)}</h2><p class="lead">${esc(x.configs.p)}</p>${pic(c, 'separator-configurations', { cls: 'contain', zoom: true })}
 <div style="margin-top:28px">${V2.schematicCfg(c)}</div></section>
 <section class="sec white"><div class="wrap g2">${pic(c, 'inlet-panel', { zoom: true })}<div><h2>${esc(x.interface.t)}</h2><p class="lead">${esc(x.interface.p)}</p></div></div></section>
@@ -188,7 +189,7 @@ function technology(c) {
 <section class="sec white"><div class="wrap g2"><div><h2>${esc(x.eng.t)}</h2><p>${esc(x.eng.p)}</p><ul class="list">${x.eng.list.map(i => `<li>${esc(i)}</li>`).join('')}</ul><p class="note" style="margin-top:20px">${esc(x.engNote)}</p></div>${pic(c, 'control-cabinet', { zoom: true })}</div></section>
 <section class="sec"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.docs.t)}</h2><p>${esc(x.docs.p)}</p>${x.docs.items.map((d, i) => `<details class="acc"${i === 0 ? ' open' : ''}><summary>${esc(d.t)}</summary><div><p>${esc(d.d)}</p><span class="badge historical">${esc(t.v2.docOnRequest)}</span>${i === 4 ? `<p style="margin-top:12px"><a href="${c.u('contact')}">${esc(t.cta.briefing)} ${ARR}</a></p>` : ''}</div></details>`).join('')}</div>
 <div><h2>${esc(x.faqTitle)}</h2>${x.faq.map(q => `<details class="acc"><summary>${esc(q.q)}</summary><div><p>${esc(q.a)}</p></div></details>`).join('')}</div></div></section>
-<section class="sec dark" id="inquiry"><div class="wrap g2" style="align-items:start"><div><h2>${esc(t.cta.briefing)}</h2><p class="lead">${esc(t.home.finalText)}</p></div>${V2.wizard(c, '', { title: t.cta.briefing })}</div></section>`;
+${V3.convert(c, { title: t.cta.briefing })}`;
   return layout(c, { title: x.title, desc: x.desc, body, crumbs: [{ n: t.nav.technology, r: 'technology' }] });
 }
 
@@ -277,6 +278,7 @@ function contact(c) {
 }
 
 const V2 = makeV2({ esc, pic, srcset, MEDIA, ARR, icon, PRODUCTS, SOLUTIONS, layout, pageHero });
+const V3 = makeV3({ esc, pic, srcset, MEDIA, ARR, PRODUCTS, SOLUTIONS, layout, V2 });
 // ---------- write ----------
 function write(rel, html) { const f = path.join(OUT, rel); fs.mkdirSync(path.dirname(f), { recursive: true }); fs.writeFileSync(f, html); }
 fs.rmSync(OUT, { recursive: true, force: true });
@@ -286,10 +288,10 @@ fs.copyFileSync(path.join(ROOT, 'src/site.js'), path.join(OUT, 'assets/site.js')
 fs.writeFileSync(path.join(OUT, 'favicon.svg'), FAVICON);
 const routes = [];
 for (const lang of LOCALES) {
-  const P = (route, fn) => { FORM_N = 0; V2.resetWizard(); write(`${lang}/${route ? route + '/' : ''}index.html`, fn(ctx(lang, route))); if (lang === 'en') routes.push(route); };
-  P('', V2.home); P('technology', technology); P('products', productsIndex);
+  const P = (route, fn) => { FORM_N = 0; V2.resetWizard(); V3.reset(); write(`${lang}/${route ? route + '/' : ''}index.html`, fn(ctx(lang, route))); if (lang === 'en') routes.push(route); };
+  P('', V3.home); P('technology', technology); P('products', productsIndex);
   for (const k of Object.keys(PRODUCTS)) P('products/' + k, c => product(c, k));
-  P('solutions', V2.solutionsIndex); for (const k of Object.keys(SOLUTIONS)) P('solutions/' + k, c => V2.solution(c, k));
+  P('solutions', V3.solutionsIndex); for (const k of Object.keys(SOLUTIONS)) P('solutions/' + k, c => V3.solution(c, k));
   P('innovation', innovation); P('partnerships', partnerships); P('resources', resources); P('about', about); P('contact', contact);
 }
 write('index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Wastecykler</title><link rel="icon" href="favicon.svg"><meta http-equiv="refresh" content="0;url=en/"><script>var l=(navigator.language||'en').slice(0,2),L=${JSON.stringify(LOCALES)};location.replace((L.indexOf(l)>-1?l:'en')+'/')</script></head><body><p><a href="en/">Continue to the Wastecykler demo</a></p>${LOCALES.map(l => `<a href="${l}/" hreflang="${l}">${T[l].meta.name}</a>`).join(' · ')}</body></html>`);
@@ -298,9 +300,19 @@ write('preview/strategy/index.html', strategyPage({ LOCALES, T }));
 write('preview/leads/index.html', leadsPage());
 write('robots.txt', DEMO ? 'User-agent: *\nDisallow: /\n' : `User-agent: *\nAllow: /\nDisallow: /preview/\nSitemap: ${SITE}/sitemap.xml\n`);
 write('sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${LOCALES.flatMap(l => routes.map(r => `<url><loc>${SITE}/${l}/${r ? r + '/' : ''}</loc>${LOCALES.map(a => `<xhtml:link rel="alternate" hreflang="${a}" href="${SITE}/${a}/${r ? r + '/' : ''}"/>`).join('')}</url>`)).join('\n')}\n</urlset>\n`);
-write('_headers', `/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/assets/*\n  Cache-Control: public, max-age=604800\n`);
+write('_headers', `/*\n  X-Robots-Tag: noindex, nofollow\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/assets/*\n  Cache-Control: public, max-age=604800\n/*.html\n  Cache-Control: public, max-age=0, must-revalidate\n`);
 write('404.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Page not found — Wastecykler</title><link rel="stylesheet" href="/assets/site.css"></head><body><main class="wrap sec"><h1>Page not found</h1><p><a class="btn btn-g" href="/en/">Go to homepage</a></p></main></body></html>`);
 fs.writeFileSync(path.join(OUT, 'media-manifest.json'), JSON.stringify(MEDIA, null, 2));
 const miss = Object.fromEntries(Object.entries(MISSING).filter(([l, v]) => v.length && l !== 'en'));
 console.log(`Built ${LOCALES.length} locales × ${routes.length} pages = ${LOCALES.length * routes.length} pages → dist/`);
 if (Object.keys(miss).length) { console.log('Missing translation keys (fell back to English):'); for (const [l, v] of Object.entries(miss)) console.log(' ', l, v.length, v.slice(0, 8).join(', ')); }
+
+// Cache-busting: version CSS/JS URLs by content hash so new HTML never pairs with stale assets.
+{
+  const crypto = await import('node:crypto');
+  const h = f => crypto.createHash('sha256').update(fs.readFileSync(path.join(OUT, 'assets', f))).digest('hex').slice(0, 10);
+  const V = { css: h('site.css'), js: h('site.js') };
+  const walk = d => { for (const f of fs.readdirSync(d)) { const p = path.join(d, f); if (fs.statSync(p).isDirectory()) walk(p); else if (f.endsWith('.html')) { const s = fs.readFileSync(p, 'utf8'); const t = s.replace(/assets\/site\.css(?=")/g, `assets/site.css?v=${V.css}`).replace(/assets\/site\.js(?=")/g, `assets/site.js?v=${V.js}`); if (t !== s) fs.writeFileSync(p, t); } } };
+  walk(OUT);
+  console.log('Asset versions', V);
+}

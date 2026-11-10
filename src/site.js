@@ -108,11 +108,11 @@
       var fd = new FormData(f), d = {}; fd.forEach(function (v, k) { d[k] = v; });
       var streams = fd.getAll('streams').join(', ');
       var fit = (d.timeframe === 'now' || /Tender|procurement|construction|İhale|appel|Ausschreib|licitac|aanbested|upphandl|入札|construct|inşaat|مناقص|إنشاء|工事|Bau|bouw|bygg|obra|chantier/i.test(d.stage || '')) ? 'High' : (d.timeframe === 'soon' || d.stage) ? 'Medium' : 'Exploratory';
-      var qual = [d.sites && ('Sites: ' + d.sites), d.stage && ('Stage: ' + d.stage), streams && ('Streams: ' + streams), d.experience && ('Experience: ' + d.experience), d.capability && ('Capability: ' + d.capability), d.area && ('Expertise: ' + d.area)].filter(Boolean).join(' · ');
+      var qual = [d.intent && ('Request: ' + d.intent),d.sites && ('Sites: ' + d.sites), d.stage && ('Stage: ' + d.stage), streams && ('Streams: ' + streams), d.experience && ('Experience: ' + d.experience), d.capability && ('Capability: ' + d.capability), d.area && ('Expertise: ' + d.area)].filter(Boolean).join(' · ');
       var lead = {
         id: 'L' + Date.now(), company: d.org, contact: d.name, role: d.role, country: d.country, email: d.email,
         type: d.buyer, project: d.project || qual || '', timeframe: d.timeframe, notes: d.desc || '', territory: d.territory || '', expertise: d.expertise || d.capabilities || '',
-        meeting: !!d.meeting, qual: qual, fit: fit, source: 'Website form — ' + (document.documentElement.lang || 'en').toUpperCase() + ' / ' + (f.dataset.variant || 'project'),
+        meeting: !!d.meeting, intent: d.intent || '', qual: qual, fit: fit, source: 'Website form — ' + (document.documentElement.lang || 'en').toUpperCase() + ' / ' + (f.dataset.variant || 'project'),
         stage: 'New Inquiry', owner: 'Unassigned', next: new Date(Date.now() + 2 * 864e5).toISOString().slice(0, 10), created: new Date().toISOString(), test: true
       };
       var list = []; try { list = JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) {}
@@ -164,6 +164,60 @@
     $$('.wback', f).forEach(function (b) { b.addEventListener('click', function () { go(cur - 1); }); });
     $$('input[name=buyer]', f).forEach(function (i) { i.addEventListener('change', function () { var e = steps[0].querySelector('.ws-err'); if (e) e.textContent = ''; }); });
   });
+
+
+  // ---- v3: annotated product diagram with leader lines ----
+  $$('[data-dg]').forEach(function (fig) {
+    var mks = $$('.mk', fig), items = $$('.dg-list li', fig), svg = $('.dg-lines', fig), img = $('.dg-img', fig);
+    function set(i) {
+      mks.forEach(function (m, k) { m.setAttribute('aria-pressed', k === i); });
+      items.forEach(function (li, k) { li.classList.toggle('on', k === i); var b = $('.dg-t', li); if (b) b.setAttribute('aria-expanded', k === i); });
+      draw();
+    }
+    function draw() {
+      if (!svg) return;
+      var list = $('.dg-list', fig), fr = fig.getBoundingClientRect(), side = getComputedStyle(fig).getPropertyValue('--dg-lines').trim();
+      if (side !== '1') { svg.innerHTML = ''; return; }
+      var rtl = getComputedStyle(fig).direction === 'rtl', ir = img.getBoundingClientRect(), out = '';
+      svg.setAttribute('width', fr.width); svg.setAttribute('height', fr.height); svg.setAttribute('viewBox', '0 0 ' + fr.width + ' ' + fr.height);
+      mks.forEach(function (m, k) {
+        var mr = m.getBoundingClientRect(), lr = $('.n', items[k]).getBoundingClientRect();
+        var x1 = mr.left + mr.width / 2 - fr.left, y1 = mr.top + mr.height / 2 - fr.top;
+        var x3 = (rtl ? lr.right + 6 : lr.left - 6) - fr.left, y3 = lr.top + lr.height / 2 - fr.top;
+        var xm = (rtl ? ir.left - 14 : ir.right + 14) - fr.left;
+        out += '<path class="ld' + (items[k].classList.contains('on') ? ' on' : '') + '" d="M' + x1 + ' ' + y1 + ' L' + xm + ' ' + y3 + ' L' + x3 + ' ' + y3 + '"/>';
+      });
+      svg.innerHTML = out;
+    }
+    mks.forEach(function (m, k) { m.addEventListener('click', function () { set(k); }); m.addEventListener('mouseenter', function () { set(k); }); });
+    items.forEach(function (li, k) { var b = $('.dg-t', li); b.addEventListener('click', function () { set(k); }); li.addEventListener('mouseenter', function () { set(k); }); });
+    var im = $('img', img); if (im && !im.complete) im.addEventListener('load', draw);
+    window.addEventListener('resize', draw); if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
+    draw(); setTimeout(draw, 400);
+  });
+
+  // ---- v3: request intent (consultation / specifications / feasibility) ----
+  function setIntent(k) {
+    var target = document.getElementById('inquiry') || document;
+    $$('input[name=intent][value=' + k + ']', target).forEach(function (r) { r.checked = true; });
+  }
+  var intentQ = (location.search.match(/[?&]intent=(\w+)/) || [])[1];
+  if (intentQ) setIntent(intentQ);
+  $$('[data-intent]').forEach(function (a) { a.addEventListener('click', function () { setIntent(a.dataset.intent); }); });
+
+  // ---- v3: sticky mobile consultation bar ----
+  var bar = $('.mcta');
+  if (bar) {
+    var inq = document.getElementById('inquiry'), ftr = $('.ftr');
+    if (inq) { var ba = $('a', bar); ba.setAttribute('href', '#inquiry'); ba.dataset.intent = 'consultation'; ba.addEventListener('click', function () { setIntent('consultation'); }); }
+    var tick = function () {
+      var vh = window.innerHeight, past = window.scrollY > vh * 0.9;
+      var hide = [inq, ftr].some(function (el) { if (!el) return false; var r = el.getBoundingClientRect(); return r.top < vh && r.bottom > 0; });
+      bar.hidden = !(past && !hide);
+      document.body.classList.toggle('has-mcta', !bar.hidden);
+    };
+    window.addEventListener('scroll', tick, { passive: true }); window.addEventListener('resize', tick); tick();
+  }
 
   // ---- v2: reveal on scroll ----
   if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {

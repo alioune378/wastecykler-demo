@@ -39,3 +39,17 @@ No partners (incl. companies in exploratory talks), customers, installations, ce
 - **Credibility:** four evidence labels used site-wide — Authentic hardware, Historical evidence, Official document, Proposed initiative (plus Conceptual AI image). Engineering capabilities grid and proposed expansion band on Innovation & History.
 - **Housekeeping:** logo-concept link and internal notes removed from public pages (editorial principles now on /preview/strategy/); discreet private-demo banner; nav switches to the menu button below 1320 px (and below 1520 px in Dutch/German) so no language overflows.
 - **QA:** 171 pages × 2 widths with no errors or broken links; no horizontal overflow at 375/390/768/1024/1200/1366/1440 px in all 9 languages; wizard → CRM tested in EN (desktop), AR (375 px) and JA (390 px). Before/after screenshots in `/screenshots` (v1 in `/screenshots/v1-before`).
+
+## v3 — engineering-led redesign (after client review)
+- **Root cause of "faceplateA", duplicated numbers and underlined paragraphs:** CSS/JS were cached for 7 days under unchanged filenames, so returning visitors saw new HTML with the old stylesheet. Asset URLs are now versioned by content hash (`site.css?v=…`) and HTML is always revalidated.
+- **Technology at the centre:** the homepage hero is now the authentic installed inlet (large, with numbered callouts); the architectural image is a muted backdrop. A specification strip follows (2–6 layouts, stainless steel, used-oil point, patent number).
+- **Annotated product diagram:** leader lines from each callout to a clean annotation list (desktop, LTR and RTL); tap-to-reveal on mobile.
+- **Engineering schematics:** a blueprint-style building section (inlet → chute → separator → compartments) replaces the simple comparison graphic. Based on historical drawings and labelled as schematic.
+- **Sectors:** each sector has its own integration drawing (tower, district, podium + tenants, hospital zones with clinical waste excluded, campus) and its own authentic hardware photo, instead of similar city images.
+- **Buyer questions:** five direct answers (problem solved, building integration, configurations/capacity/maintenance, what has been demonstrated, how large projects are assessed) — unverified data is explicitly deferred to technical assessment.
+- **Engagement process:** five stages with outputs, labelled as a proposed process.
+- **Conversion:** three request paths (technical consultation, engineering specifications, project feasibility) feed a "What do you need?" field in the inquiry; sticky mobile consultation bar; header CTA becomes "Request consultation" when the menu is collapsed. CRM shows the request type.
+- **Evidence labels:** kept on every item but restyled as quiet tags instead of coloured pills.
+- **Heritage:** an engineering heritage timeline replaces the photo grid on the homepage.
+- **Typography:** Inter is now self-hosted (OFL licence included), so all visitors see the intended typography.
+- **QA:** 171 pages × 2 widths with no errors or broken links; no horizontal overflow at 375–1440 px in 9 languages; inquiry → CRM tested in EN, AR, JA; intent presets, leader lines (LTR/RTL) and sticky bar tested. Screenshots: `/screenshots` (v2 in `/screenshots/v2-before`, v1 in `/screenshots/v1-before`).

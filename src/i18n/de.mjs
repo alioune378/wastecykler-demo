@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Geöffneter Schaltschrank mit Relais, Klemmen und Steuerplatine',
     'separator-configurations': 'Strichzeichnung von Trennsystemen mit 2, 3, 4 und 6 Fraktionen und beschrifteten Kammern',
     'presentation': 'Drei Personen bei einer Produktpräsentation neben einer wandmontierten Wastecykler-Einwurfeinheit',
+    'community-installation': 'Zwei Kinder vor einer frühen Wastecykler-Sammelstation im Freien mit Fächern für Papier, Kunststoff, Glas und Kleidung',
     'pilot-chute-labels': 'Sammelschächte eines Pilotprojekts mit zweisprachigen Schildern für Elektronik, Verpackungen, Restmüll und Glas',
     'municipal-sheet': 'Historisches türkisches Informationsblatt über das System für Kommunen',
     'tr-patent-certificate': 'Urkunde des Türkischen Patent- und Markenamts für das geprüfte Patent TR 2013 03567 B',

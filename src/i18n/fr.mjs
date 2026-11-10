@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Armoire électrique ouverte avec relais, borniers et carte de contrôle',
     'separator-configurations': 'Schéma des configurations de séparateurs à 2, 3, 4 et 6 flux avec compartiments étiquetés',
     'presentation': 'Trois personnes lors d’une présentation de produit, à côté d’un panneau de trappe Wastecykler',
+    'community-installation': 'Deux enfants devant une ancienne unité de collecte extérieure Wastecykler étiquetée pour papier, plastique, verre et vêtements',
     'pilot-chute-labels': 'Goulottes de collecte d’un projet pilote, avec étiquettes bilingues pour électronique, emballages, ordures et verre',
     'municipal-sheet': 'Fiche d’information historique en turc sur le système, destinée aux municipalités',
     'tr-patent-certificate': 'Certificat de l’Office turc des brevets et des marques pour le brevet examiné TR 2013 03567 B',

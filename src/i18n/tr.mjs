@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Röleler, klemensler ve kontrol kartı bulunan açık elektrik panosu',
     'separator-configurations': '2, 3, 4 ve 6 atıklı ayrıştırıcı yapılandırmalarının etiketli bölmeli çizimi',
     'presentation': 'Duvara monte Wastecykler giriş paneli yanında ürün tanıtımındaki üç kişi',
+    'community-installation': 'Kâğıt, plastik, cam ve eşya-giysi atıkları için etiketli eski bir açık hava Wastecykler toplama ünitesinin önünde iki çocuk',
     'pilot-chute-labels': 'Elektronik, ambalaj, evsel ve cam atık için iki dilli etiketli pilot proje atık bacaları',
     'municipal-sheet': 'Belediyeler için sistemi anlatan tarihî Türkçe bilgi föyü',
     'tr-patent-certificate': 'TR 2013 03567 B numaralı incelemeli patent için Türk Patent ve Marka Kurumu belgesi',

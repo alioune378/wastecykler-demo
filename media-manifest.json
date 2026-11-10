@@ -134,6 +134,22 @@
       "rights": "Identifiable adults — written usage permission required",
       "priority": "Confirm permissions"
     },
+    "community-installation": {
+      "folder": "history",
+      "w": [
+        640,
+        800
+      ],
+      "ratio": "1/1",
+      "status": "historical",
+      "source": "Media Kit — community_historical_installation.jpg (orig. IMG_9772, 320×320), from the former Wastecykler website",
+      "edit": "Upscaled 2.5× from low-resolution source.",
+      "sections": [
+        "innovation timeline: pilot installations"
+      ],
+      "rights": "Owner confirmed ownership and approved use (10 Nov 2026), incl. identifiable children",
+      "priority": "Request original high-resolution file"
+    },
     "pilot-chute-labels": {
       "folder": "history",
       "w": [
@@ -237,10 +253,6 @@
     }
   },
   "excluded": [
-    {
-      "file": "internal/excluded/community_historical_installation.jpg",
-      "reason": "Identifiable children. Excluded from the public demo by default; publish only with documented guardian permission."
-    },
     {
       "file": "internal/originals/historical_municipal_and_smart_container_sheet.jpg",
       "reason": "Mobile screenshot (duplicate of extracted sheets). Kept for reference only."

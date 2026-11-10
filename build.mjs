@@ -230,9 +230,9 @@ function solution(c, k) {
 
 function innovation(c) {
   const { t } = c, x = t.innov;
-  const imgs = [null, null, 'pilot-chute-labels', 'presentation', null];
+  const imgs = [null, null, ['pilot-chute-labels', 'community-installation'], 'presentation', null];
   const body = pageHero(c, { eyebrow: t.nav.innovation, h1: x.h1, lead: x.intro }) +
-    `<section class="sec white"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.timelineTitle)}</h2><ol class="tl">${x.timeline.map((e, i) => `<li><span class="y">${esc(e.y)}</span><div><span class="badge ${e.s}">${esc(t.status[e.s])}</span><h3 style="margin-top:8px">${esc(e.t)}</h3><p>${esc(e.d)}</p>${imgs[i] ? pic(c, imgs[i], { badge: false, zoom: true, sizes: '(max-width:800px) 80vw, 480px' }) : ''}</div></li>`).join('')}</ol></div>
+    `<section class="sec white"><div class="wrap g2" style="align-items:start"><div><h2>${esc(x.timelineTitle)}</h2><ol class="tl">${x.timeline.map((e, i) => `<li><span class="y">${esc(e.y)}</span><div><span class="badge ${e.s}">${esc(t.status[e.s])}</span><h3 style="margin-top:8px">${esc(e.t)}</h3><p>${esc(e.d)}</p>${imgs[i] ? `<div style="display:grid;grid-template-columns:repeat(${[].concat(imgs[i]).length},1fr);gap:10px">${[].concat(imgs[i]).map(id => pic(c, id, { badge: false, zoom: true, sizes: '(max-width:800px) 45vw, 240px' })).join('')}</div>` : ''}</div></li>`).join('')}</ol></div>
 <div style="position:sticky;top:96px">${pic(c, 'municipal-sheet', { zoom: true, caption: esc(t.alt['municipal-sheet']), sizes: '(max-width:800px) 92vw, 520px' })}</div></div></section>
 <section class="sec" id="patent"><div class="wrap g2" style="align-items:start"><div style="max-width:440px">${pic(c, 'tr-patent-certificate', { zoom: true, cls: 'contain', sizes: '(max-width:800px) 92vw, 440px' })}</div><div><h2>${esc(x.patentTitle)}</h2><p>${esc(x.patentText)}</p><dl class="kv">${x.patentFacts.map(([a, b]) => `<dt>${esc(a)}</dt><dd${/TR 2013|Karaca|ayrıştırma/.test(b) ? ' lang="tr"' : ''}>${esc(b)}</dd>`).join('')}</dl><p class="note" style="margin-top:20px">${esc(x.patentNote)}</p>
 <h3 style="margin-top:28px">${esc(x.principlesTitle)}</h3><ul class="list">${x.principles.map(p => `<li>${esc(p)}</li>`).join('')}</ul></div></div></section>

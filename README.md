@@ -13,7 +13,7 @@ Concept prepared by **Dalal Technologies** for Wastecykler. Private, non-product
 | `src/preview.mjs` | Private `/preview/strategy/` presentation and `/preview/leads/` demo CRM. |
 | `src/site.css`, `src/site.js` | Design system and client behaviour (menu, tabs, gallery, lightbox, forms → CRM). |
 | `src/assets/` | Optimised WebP/AVIF/JPEG variants, organised by `authentic/ technology/ history/ patent/ concepts/ architecture/`. |
-| `internal/` | Originals and **excluded** media (e.g. photo with children). Never deployed. |
+| `internal/` | Raw originals and logo reference boards (not in the repository). |
 | `dist/` | Build output — deploy this folder. |
 | `screenshots/` | Desktop/mobile/RTL/CRM captures. |
 

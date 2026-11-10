@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Open electrical control cabinet with relays, terminal blocks and a controller board',
     'separator-configurations': 'Line diagram of 2, 3, 4 and 6 waste-separator configurations with labelled compartments',
     'presentation': 'Three people at a product presentation beside a wall-mounted Wastecykler inlet panel',
+    'community-installation': 'Two children beside an early outdoor Wastecykler collection unit labelled for paper, plastic, glass and clothing waste',
     'pilot-chute-labels': 'Pilot-project collection chutes with bilingual labels for electronics, packaging, household and glass waste',
     'municipal-sheet': 'Historical Turkish information sheet about the system for municipalities',
     'tr-patent-certificate': 'Turkish Patent and Trademark Office certificate for examined patent TR 2013 03567 B',

@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Armario eléctrico abierto con relés, bornes y placa controladora',
     'separator-configurations': 'Esquema de separadores de 2, 3, 4 y 6 fracciones con compartimentos rotulados',
     'presentation': 'Tres personas en una presentación de producto junto a un panel mural de Wastecykler',
+    'community-installation': 'Dos niños junto a una antigua unidad de recogida exterior de Wastecykler rotulada para papel, plástico, vidrio y ropa',
     'pilot-chute-labels': 'Bajantes de recogida de un proyecto piloto con rótulos bilingües para electrónica, envases, residuos domésticos y vidrio',
     'municipal-sheet': 'Hoja informativa histórica en turco sobre el sistema para municipios',
     'tr-patent-certificate': 'Certificado de la Oficina Turca de Patentes y Marcas de la patente examinada TR 2013 03567 B',

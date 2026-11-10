@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'リレー、端子台、制御基板が見える開いた電気制御盤',
     'separator-configurations': '2・3・4・6分別の分別器構成とラベル付き区画を示す線図',
     'presentation': '壁付けの Wastecykler 投入パネルの横で行われた製品発表に立つ3名',
+    'community-installation': '紙・プラスチック・ガラス・衣類用の表示がある、初期の屋外型 Wastecykler 回収ユニットの前に立つ2人の子ども',
     'pilot-chute-labels': '電子機器、包装、一般ごみ、ガラス用の2か国語ラベルが付いたパイロット事業の回収シュート',
     'municipal-sheet': '自治体向けにシステムを紹介したトルコ語の過去の資料',
     'tr-patent-certificate': 'トルコ特許商標庁による審査済み特許 TR 2013 03567 B の証書',

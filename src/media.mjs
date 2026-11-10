@@ -44,6 +44,12 @@ export const MEDIA = {
     source: 'Media Kit — stainless_steel_inlet_front.jpg (orig. IMG_9779, 991×655). NOTE: kit filename does not match content — this file shows the presentation with three people.', edit: 'Mild enhancement and upscaling.',
     sections: ['innovation timeline', 'about'], rights: 'Identifiable adults — written usage permission required', priority: 'Confirm permissions'
   },
+  'community-installation': {
+    folder: 'history', w: [640, 800], ratio: '1/1', status: 'historical',
+    source: 'Media Kit — community_historical_installation.jpg (orig. IMG_9772, 320×320), from the former Wastecykler website',
+    edit: 'Upscaled 2.5× from low-resolution source.', sections: ['innovation timeline: pilot installations'],
+    rights: 'Owner confirmed ownership and approved use (10 Nov 2026), incl. identifiable children', priority: 'Request original high-resolution file'
+  },
   'pilot-chute-labels': {
     folder: 'history', w: [640, 800], ratio: '1/1', status: 'historical',
     source: 'Media Kit — control_panel_buttons_two_versions.jpg (orig. IMG_9777, 320×320) — shows labelled collection chutes of a pilot project',
@@ -79,7 +85,6 @@ export const MEDIA = {
 };
 
 export const EXCLUDED = [
-  { file: 'internal/excluded/community_historical_installation.jpg', reason: 'Identifiable children. Excluded from the public demo by default; publish only with documented guardian permission.' },
   { file: 'internal/originals/historical_municipal_and_smart_container_sheet.jpg', reason: 'Mobile screenshot (duplicate of extracted sheets). Kept for reference only.' },
   { file: 'internal/originals/a_clean_*.png, IMG_9785(1).jpeg', reason: 'Raster logo concepts and legacy logo — reference only. Rebuilt as SVG in src/assets/brand.' },
   { file: 'Supporting Visuals 02 & 04', reason: 'Near-duplicate blue-hour cityscapes; omitted to avoid repetition.' }

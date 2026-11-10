@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Geopende schakelkast met relais, aansluitklemmen en besturingsprint',
     'separator-configurations': 'Lijntekening van scheiders voor 2, 3, 4 en 6 stromen met gelabelde compartimenten',
     'presentation': 'Drie personen bij een productpresentatie naast een wandgemonteerd Wastecykler-inworppaneel',
+    'community-installation': 'Twee kinderen bij een vroege Wastecykler-inzamelunit buiten met vakken voor papier, plastic, glas en kleding',
     'pilot-chute-labels': 'Inzamelschachten van een pilotproject met tweetalige labels voor elektronica, verpakkingen, restafval en glas',
     'municipal-sheet': 'Historisch Turks informatieblad over het systeem voor gemeenten',
     'tr-patent-certificate': 'Certificaat van het Turkse octrooi- en merkenbureau voor het onderzochte octrooi TR 2013 03567 B',

@@ -12,6 +12,7 @@ export default {
     'control-cabinet': 'Öppet elskåp med reläer, plintar och styrkort',
     'separator-configurations': 'Linjeritning av avskiljare för 2, 3, 4 och 6 fraktioner med märkta fack',
     'presentation': 'Tre personer vid en produktpresentation bredvid en väggmonterad Wastecykler-inkastpanel',
+    'community-installation': 'Två barn vid en tidig utomhusinsamlingsenhet från Wastecykler märkt för papper, plast, glas och kläder',
     'pilot-chute-labels': 'Insamlingsschakt i ett pilotprojekt med tvåspråkiga skyltar för elektronik, förpackningar, hushållsavfall och glas',
     'municipal-sheet': 'Historiskt turkiskt informationsblad om systemet för kommuner',
     'tr-patent-certificate': 'Intyg från Turkiets patent- och varumärkesverk för det granskade patentet TR 2013 03567 B',
